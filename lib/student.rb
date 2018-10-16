@@ -1,8 +1,7 @@
 require_relative "../config/environment.rb"
 
 class Student
-  attr_accessor :name, :grade
-  attr_reader :id
+  attr_accessor :name, :grade, :id
 
   def initialize(id=nil, name, grade)
     @id = id
@@ -25,5 +24,17 @@ class Student
     def self.drop_table
       DB[:conn].execute("DROP TABLE students")
     end
+
+    def save
+      if id
+        update
+      else
+        sql = <<-SQL
+        INSERT INTO students (name, grade)
+        VALUES (?, ?)
+        SQL
+
+        DB[:conn].execute(sql, name, grade)
+        @id = DB[:conn].execute("SELECT last_insert_rowid() FROM songs")[0][0]
 
 end
